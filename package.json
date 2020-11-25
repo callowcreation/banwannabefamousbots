@@ -1,0 +1,15 @@
+{
+  "name": "banwannabefamousbots",
+  "version": "1.0.0",
+  "description": "Twitch chatbot to help combat the spam from chatbot offering follows and more for sale.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "caLLowCreation",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "tmi.js": "^1.4.2"
+  }
+}
