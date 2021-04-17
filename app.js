@@ -32,11 +32,11 @@ const commands = {
 
 		try {
 			await client.join(user.username);
-			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is joining your channel, please KIT.`);
-		
+			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is joining your channel, please \\mod ${process.env.BOT_USERNAME} so it can timeout spam bots.`);
+
 			const path = ".\\data\\channels.json";
 			const channels = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
-			if(channels.includes(user.username) === false) {
+			if (channels.includes(user.username) === false) {
 				channels.push(user.username);
 				fs.writeFileSync(path, JSON.stringify(channels));
 			}
@@ -52,10 +52,10 @@ const commands = {
 			target = target === process.env.CHANNEL_NAME ? process.env.CHANNEL_NAME : user.username;
 			await client.part(user.username);
 			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is leaving your channel, please KIT.`);
-			
+
 			const path = ".\\data\\channels.json";
 			let channels = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
-			if(channels.includes(user.username) === true) {
+			if (channels.includes(user.username) === true) {
 				channels = channels.filter(x => x !== user.username);
 				fs.writeFileSync(path, JSON.stringify(channels));
 			}
@@ -83,22 +83,30 @@ async function onMessageHandler(channel, user, message, self) {
 async function onSpamHandler(channel, user, message, self) {
 	if (self) return;
 
-	const path = ".\\data\\spam-patterns.json";
-	const patterns = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
+	try {
+		const path = ".\\data\\spam-patterns.json";
+		const patterns = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
 
-	for (let i = 0; i < patterns.length; i++) {
-		const norm = message.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		if (norm.toLowerCase().includes(patterns[i])) {
-			console.log({ channel, user, message });
-			
-			const path = ".\\data\\messages.json";
-			const messages = (JSON.parse(fs.readFileSync(path, 'utf8')));
-			messages.push({ channel, user, message });
-			fs.writeFileSync(path, JSON.stringify(messages));
+		for (let i = 0; i < patterns.length; i++) {
+			const norm = message.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+			if (norm.toLowerCase().includes(patterns[i])) {
+				console.log({ channel, user, message });
 
-			if(user.badges.broadcaster == '1' || user.mod === true) return;
-			return client.timeout(channel, user.username, 1);
+				const path = ".\\data\\messages.json";
+				const messages = (JSON.parse(fs.readFileSync(path, 'utf8')));
+				messages.push({ channel, user, message });
+				fs.writeFileSync(path, JSON.stringify(messages));
+
+				if (user.badges && user.badges.broadcaster == '1') return;
+				if (user.mod === true) return;
+
+				return client.timeout(channel, user.username, 1);
+			}
 		}
+	} catch (error) {
+		console.log({ error });
+		const target = channel.substr(1);
+		await client.say(target, `@${target} I need to be a mod to timeout spam users.`);
 	}
 }
 
@@ -118,7 +126,7 @@ async function onCommandHandler(channel, user, message, self) {
 
 async function onConnectedHandler(addr, port) {
 	console.log(`* Connected to ${addr}:${port}`);
-	
+
 	const path = ".\\data\\channels.json";
 	const channels = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
 
