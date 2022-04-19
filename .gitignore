@@ -1,3 +1,8 @@
 /node_modules
 *.env
 .vscode
+
+data/channels.json
+data/messages.json
+ideas.txt
+data/channels.json
