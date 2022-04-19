@@ -83,6 +83,9 @@ async function onMessageHandler(channel, user, message, self) {
 async function onSpamHandler(channel, user, message, self) {
 	if (self) return;
 
+	//if (user.badges && user.badges.broadcaster == '1') return;
+	//if (user.mod === true) return;
+
 	try {
 		const path = ".\\data\\spam-patterns.json";
 		const patterns = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
@@ -97,10 +100,8 @@ async function onSpamHandler(channel, user, message, self) {
 				messages.push({ channel, user, message });
 				fs.writeFileSync(path, JSON.stringify(messages));
 
-				if (user.badges && user.badges.broadcaster == '1') return;
-				if (user.mod === true) return;
-
-				return client.timeout(channel, user.username, 1);
+				return client.timeout(channel, user.username, 1)
+					.catch(e => console.error(e));
 			}
 		}
 	} catch (error) {
@@ -132,8 +133,13 @@ async function onConnectedHandler(addr, port) {
 
 	for (let i = 0; i < channels.length; i++) {
 		const channel = channels[i];
-		const result = await client.join(channel);
-		console.log(result);
+		try {
+			const result = await client.join(channel);
+			console.log(result);
+		} catch (err) {
+			console.error(err);
+		}
+
 	}
 }
 /*
