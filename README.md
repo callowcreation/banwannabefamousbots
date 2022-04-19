@@ -50,6 +50,8 @@ Navigate to the data folder there should be a spam-patterns.json there.
 Create - channels.json
 Create - messages.json
 
+The messages.json file is only needed if you want to keep all the messages that was removed from chat.
+
 ## Common Usage
 Open a command prompt to the banwannabefamousbots directory.
 ```sh

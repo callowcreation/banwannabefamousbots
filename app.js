@@ -96,9 +96,11 @@ async function onSpamHandler(channel, user, message, self) {
 				console.log({ channel, user, message });
 
 				const path = ".\\data\\messages.json";
-				const messages = (JSON.parse(fs.readFileSync(path, 'utf8')));
-				messages.push({ channel, user, message });
-				fs.writeFileSync(path, JSON.stringify(messages));
+				if(fs.existsSync(path)) {
+					const messages = (JSON.parse(fs.readFileSync(path, 'utf8')));
+					messages.push({ channel, user, message });
+					fs.writeFileSync(path, JSON.stringify(messages));
+				}
 
 				return client.timeout(channel, user.username, 1)
 					.catch(e => console.error(e));
