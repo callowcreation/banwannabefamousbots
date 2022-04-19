@@ -45,6 +45,10 @@ BOT_USERNAME=botname
 OAUTH_TOKEN=oauth:authtokenhere
 CHANNEL_NAME=channelname
 ```
+Create two files:
+Navigate to the data folder there should be a spam-patterns.json there.
+Create - channels.json
+Create - messages.json
 
 ## Common Usage
 Open a command prompt to the banwannabefamousbots directory.
