@@ -26,13 +26,18 @@ const client = new tmi.client(opts);
 const COMMAND_PREFIX = '!';
 
 const commands = {
-	'join': async ({ channel, user }) => {
+	'join': async ({ channel, user, params }) => {
 		let target = channel.substr(1);
 		if (target !== process.env.CHANNEL_NAME) return;
-
+		let joinMsgPart = 'is joining';
+		if(params.length === 1) {
+			user.username = params[0].toLowerCase();
+			target = user.username;
+			joinMsgPart = 'has joined';
+		}
 		try {
 			await client.join(user.username);
-			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is joining your channel, please \\mod ${process.env.BOT_USERNAME} so it can timeout spam bots.`);
+			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} ${joinMsgPart} your channel, please \\mod ${process.env.BOT_USERNAME} so it can timeout spam bots.`);
 
 			const path = ".\\data\\channels.json";
 			const channels = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
@@ -50,8 +55,8 @@ const commands = {
 
 		try {
 			target = target === process.env.CHANNEL_NAME ? process.env.CHANNEL_NAME : user.username;
-			await client.part(user.username);
 			await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is leaving your channel, please KIT.`);
+			await client.part(user.username);
 
 			const path = ".\\data\\channels.json";
 			let channels = (JSON.parse(fs.readFileSync(path, 'utf8'))).map(x => x.toLowerCase());
@@ -62,6 +67,9 @@ const commands = {
 		} catch (error) {
 			console.log(error);
 		}
+	},
+	'!famous': async ({ channel, user }) => {
+		await client.say(target, `@${user.username} ${process.env.BOT_USERNAME}is keeping you from being famous.`);
 	}
 };
 
@@ -117,7 +125,7 @@ async function onCommandHandler(channel, user, message, self) {
 	if (self) return;
 	if (!message.startsWith(COMMAND_PREFIX)) return;
 
-	const parts = message.trim().split(' ');
+	const parts = message.trim().split(' ').filter(x => x);
 	const command = parts.shift().replace(COMMAND_PREFIX, '');
 	const params = parts;
 
