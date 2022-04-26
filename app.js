@@ -70,7 +70,7 @@ const commands = {
 	},
 	'famous': async ({ channel, user }) => {
 		let target = channel.substr(1);
-		await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is keeping ${target} from being famous, if you have given it mod privileges.`);
+		await client.say(target, `@${user.username} I am is keeping ${target} from being famous, if ${target} has given me mod privileges.`);
 	}
 };
 
