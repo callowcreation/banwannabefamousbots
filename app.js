@@ -68,8 +68,9 @@ const commands = {
 			console.log(error);
 		}
 	},
-	'!famous': async ({ channel, user }) => {
-		await client.say(target, `@${user.username} ${process.env.BOT_USERNAME}is keeping you from being famous.`);
+	'famous': async ({ channel, user }) => {
+		let target = channel.substr(1);
+		await client.say(target, `@${user.username} ${process.env.BOT_USERNAME} is keeping ${target} from being famous.`);
 	}
 };
 
