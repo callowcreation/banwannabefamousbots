@@ -4,7 +4,7 @@ const fs = require('fs');
 const tmi = require('tmi.js');
 
 /*
-    Basic framework can be found here https://dev.twitch.tv/docs/irc
+	Basic framework can be found here https://dev.twitch.tv/docs/irc
 */
 
 const opts = {
@@ -30,7 +30,7 @@ const commands = {
 		let target = channel.substr(1);
 		if (target !== process.env.CHANNEL_NAME) return;
 		let joinMsgPart = 'is joining';
-		if(params.length === 1) {
+		if (params.length === 1) {
 			user.username = params[0].toLowerCase();
 			target = user.username;
 			joinMsgPart = 'has joined';
@@ -105,20 +105,27 @@ async function onSpamHandler(channel, user, message, self) {
 				console.log({ channel, user, message });
 
 				const path = ".\\data\\messages.json";
-				if(fs.existsSync(path)) {
+				if (fs.existsSync(path)) {
 					const messages = (JSON.parse(fs.readFileSync(path, 'utf8')));
 					messages.push({ channel, user, message });
 					fs.writeFileSync(path, JSON.stringify(messages));
 				}
 
 				return client.timeout(channel, user.username, 1)
-					.catch(e => console.error(e));
+					.catch(e => {
+						if (e === 'no_permission') {
+							const target = channel.substr(1);
+							client.say(target, `@${target} I need to be a mod to timeout spam bots.`)
+								.then(r => console.log(r));
+						} else {
+							throw e;
+						}
+						console.error(e);
+					});
 			}
 		}
 	} catch (error) {
 		console.log({ error });
-		const target = channel.substr(1);
-		await client.say(target, `@${target} I need to be a mod to timeout spam users.`);
 	}
 }
 
@@ -150,7 +157,7 @@ async function onConnectedHandler(addr, port) {
 		} catch (err) {
 			console.error(err);
 		}
-
+		await new Promise(resolve => setTimeout(resolve, 500));
 	}
 }
 /*
