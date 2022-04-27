@@ -115,7 +115,7 @@ async function onSpamHandler(channel, user, message, self) {
 					.catch(e => {
 						if (e === 'no_permission') {
 							const target = channel.substr(1);
-							client.say(target, `@${target} I need to be a mod to timeout spam bots.`)
+							client.say(target, `@${target} I need to be a mod to timeout spam bot ${user.username}`)
 								.then(r => console.log(r));
 						} else {
 							throw e;
