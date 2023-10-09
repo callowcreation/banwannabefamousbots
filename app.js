@@ -152,8 +152,9 @@ async function onConnectedHandler(addr, port) {
 	for (let i = 0; i < channels.length; i++) {
 		const channel = channels[i];
 		try {
+			console.log(`Joining ${channel}`);
 			const result = await client.join(channel);
-			console.log(result);
+			console.log(`Joined ${JSON.stringify(result)}`);
 		} catch (err) {
 			console.error(err);
 		}
